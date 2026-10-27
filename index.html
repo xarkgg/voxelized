@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Voxel QR</title>
+    <meta name="description" content="Turn any link into a QR code that grows a voxel object when you tilt it." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&display=swap" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <p class="mark">voxel qr</p>
+    <main class="wrap">
+      <div class="stage" id="stage">
+        <div class="shadow" id="shadow"></div>
+        <canvas id="c" role="img" aria-label="QR code drawn as a voxel object. Drag to tilt."></canvas>
+      </div>
+      <div class="controls">
+        <input class="field" id="url" type="url" inputmode="url" autocomplete="off" autocapitalize="off"
+          spellcheck="false" placeholder="https://your-link.com" value="https://enzo.fyi" aria-label="Link to encode" />
+        <div class="chips" id="chips" role="group" aria-label="Object to grow"></div>
+        <div class="emoji-row" id="emojiRow" hidden>
+          <input class="field field--emoji" id="emoji" type="text" maxlength="16" placeholder="🌸"
+            value="🌸" aria-label="Emoji or character to voxelize" />
+        </div>
+        <div class="row">
+          <button class="btn seg" id="toggle" type="button" aria-pressed="false"><b class="is-on">Flat</b> / <b>3D</b></button>
+          <button class="btn" id="dl" type="button">Download PNG</button>
+          <button class="btn" id="tilt" type="button" hidden>Enable tilt</button>
+        </div>
+        <p class="hint" id="hint">Tilt, drag, or pick something to grow on your QR</p>
+      </div>
+    </main>
+    <div class="save" id="save" hidden>
+      <img id="saveImg" alt="Flat QR code" width="360" height="360"
+        src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='360'%3E%3Crect width='360' height='360' fill='%23f3efe4'/%3E%3C/svg%3E" />
+      <p class="hint">Long-press or right-click the image to save it.</p>
+      <div class="row"><button class="btn" id="saveClose" type="button">Done</button></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+    <script src="models.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
