@@ -27,8 +27,11 @@
         </div>
         <div class="row">
           <button class="btn seg" id="toggle" type="button" aria-pressed="false"><b class="is-on">Flat</b> / <b>3D</b></button>
-          <button class="btn" id="dl" type="button">Download PNG</button>
-          <button class="btn" id="tilt" type="button" hidden>Enable tilt</button>
+          <button class="btn" id="tilt" type="button" aria-pressed="false" hidden>Tilt off</button>
+        </div>
+        <div class="row">
+          <button class="btn" id="dlQr" type="button">Save QR</button>
+          <button class="btn" id="dl3d" type="button">Save 3D</button>
         </div>
         <p class="hint" id="hint">Tilt, drag, or pick something to grow on your QR</p>
       </div>
@@ -36,7 +39,7 @@
     <div class="save" id="save" hidden>
       <img id="saveImg" alt="Flat QR code" width="360" height="360"
         src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='360'%3E%3Crect width='360' height='360' fill='%23f3efe4'/%3E%3C/svg%3E" />
-      <p class="hint">Long-press or right-click the image to save it.</p>
+      <p class="hint" id="saveHint">Long-press or right-click the image to save it.</p>
       <div class="row"><button class="btn" id="saveClose" type="button">Done</button></div>
     </div>
 

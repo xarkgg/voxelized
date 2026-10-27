@@ -9,9 +9,9 @@ From straight above it is a normal, scannable QR code. Tilt your phone or drag i
 - Live QR generation as you type (error correction level H)
 - Ten voxel objects: cherry tree, pine tree, mushroom, house, castle, rocket, cactus, cat, heart, planet
 - Random pick, plus an emoji mode that voxelizes any emoji or character
-- Tilt with the device gyroscope (iOS asks for permission), drag on desktop, or use the Flat / 3D toggle
+- Tilt with the device gyroscope via a Tilt on/off switch (recalibrates each time it is turned on; iOS asks for permission), drag on desktop, or use the Flat / 3D toggle
 - Spring physics and a staggered voxel pop when anything changes
-- Download the flat, scannable view as a 1200 px PNG
+- Save QR exports the flat, scannable view; Save 3D exports the isometric voxel object on a transparent background (both 1200 px PNG)
 
 ## How the QR stays scannable
 

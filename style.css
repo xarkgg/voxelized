@@ -153,6 +153,9 @@ body {
   z-index: 10;
 }
 .save[hidden] { display: none; }
+.save img.is-3d { background: repeating-conic-gradient(#ecebef 0 25%, #f7f6f9 0 50%) 0 0 / 24px 24px; }
+#tilt[aria-pressed="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+#tilt b { font-weight: 500; }
 .save img { width: min(70vw, 360px); border-radius: 16px; box-shadow: 0 12px 40px rgba(29, 27, 34, 0.12); }
 
 body.no-webgl .stage, body.no-webgl .chips, body.no-webgl .row { display: none; }

@@ -471,37 +471,51 @@
   canvas.addEventListener("pointercancel", endDrag);
   canvas.addEventListener("pointerleave", function (e) { if (e.pointerType === "mouse") hover.on = false; });
 
+  // ---------- device tilt (opt-in, switchable) ----------
+  var tiltBtn = document.getElementById("tilt");
+  var tiltListening = false;
   function onOrient(e) {
-    if (e.beta == null || e.gamma == null) return;
+    if (!tiltEnabled || e.beta == null || e.gamma == null) return;
     if (tilt.beta0 === null) { tilt.beta0 = e.beta; tilt.gamma0 = e.gamma; }
     var db = e.beta - tilt.beta0, dg = e.gamma - tilt.gamma0;
     tilt.on = true;
     tilt.t = Math.min(1, Math.max(0, (Math.hypot(db, dg) - 3) / 22));
     tilt.yaw = Math.max(-1, Math.min(1, dg / 30)) * 0.6;
   }
-  var tiltBtn = document.getElementById("tilt");
-  if (typeof DeviceOrientationEvent !== "undefined" && typeof DeviceOrientationEvent.requestPermission === "function") {
+  var tiltEnabled = false;
+  function setTilt(on) {
+    tiltEnabled = on;
+    tilt.on = false;
+    tilt.beta0 = null;          // recalibrate to however the phone is held right now
+    tiltBtn.setAttribute("aria-pressed", on ? "true" : "false");
+    tiltBtn.innerHTML = on ? "Tilt <b>on</b>" : "Tilt off";
+    if (on && !tiltListening) { window.addEventListener("deviceorientation", onOrient); tiltListening = true; }
+  }
+  var canTilt = typeof window.DeviceOrientationEvent !== "undefined" &&
+    (("ontouchstart" in window) || navigator.maxTouchPoints > 0);
+  if (canTilt) {
     tiltBtn.hidden = false;
+    setTilt(false);
     tiltBtn.addEventListener("click", function () {
-      DeviceOrientationEvent.requestPermission().then(function (s) {
-        if (s === "granted") {
-          tilt.beta0 = null;
-          window.addEventListener("deviceorientation", onOrient);
-          tiltBtn.hidden = true;
-        } else {
-          tiltBtn.textContent = "Tilt blocked";
-        }
-      }).catch(function () { tiltBtn.textContent = "Tilt unavailable"; });
+      if (tiltEnabled) { setTilt(false); return; }
+      if (typeof DeviceOrientationEvent.requestPermission === "function") {
+        DeviceOrientationEvent.requestPermission().then(function (s) {
+          if (s === "granted") setTilt(true);
+          else tiltBtn.textContent = "Tilt blocked";
+        }).catch(function () { tiltBtn.textContent = "Tilt unavailable"; });
+      } else {
+        setTilt(true);
+      }
     });
-  } else if (typeof window.DeviceOrientationEvent !== "undefined") {
-    window.addEventListener("deviceorientation", onOrient);
   }
 
   // ---------- export ----------
   var saveEl = document.getElementById("save");
-  var dlBtn = document.getElementById("dl");
+  var saveImg = document.getElementById("saveImg");
+  var saveHint = document.getElementById("saveHint");
   document.getElementById("saveClose").addEventListener("click", function () { saveEl.hidden = true; });
-  dlBtn.addEventListener("click", function () {
+
+  function exportPNG(kind, btn, label) {
     if (!mesh) return;
     popEnd = 0;
     applyPop(performance.now() / 1000, true);
@@ -510,8 +524,13 @@
     renderer.getSize(size);
     renderer.setPixelRatio(1);
     renderer.setSize(1200, 1200, false);
-    renderer.setClearColor(0xffffff, 1);
-    placeCamera(0, 0, true);
+    if (kind === "qr") {
+      renderer.setClearColor(0xffffff, 1);
+      placeCamera(0, 0, true);
+    } else {
+      renderer.setClearColor(0x000000, 0);   // transparent background for the object shot
+      placeCamera(1, tS.x > 0.5 ? yawS.x : 0, false);
+    }
     renderer.render(scene, camera);
     var url = canvas.toDataURL("image/png");
     renderer.setClearColor(0x000000, 0);
@@ -520,10 +539,11 @@
     dirty = true;
 
     var slug = (input.value.trim() || DEFAULT_URL).replace(/^https?:\/\//, "").replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "").slice(0, 40);
+    var name = (kind === "qr" ? "voxel-qr-" : "voxel-3d-") + (slug || "link") + ".png";
     try {
       var a = document.createElement("a");
       a.href = url;
-      a.download = "voxel-qr-" + (slug || "link") + ".png";
+      a.download = name;
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -531,13 +551,19 @@
     var framed = false;
     try { framed = window.self !== window.top; } catch (err) { framed = true; }
     if (framed) {
-      document.getElementById("saveImg").src = url;
+      saveImg.src = url;
+      saveImg.alt = kind === "qr" ? "Flat QR code" : "3D voxel object";
+      saveImg.classList.toggle("is-3d", kind !== "qr");
       saveEl.hidden = false;
     }
-    dlBtn.textContent = "Saved ✓";
-    clearTimeout(dlBtn._t);
-    dlBtn._t = setTimeout(function () { dlBtn.textContent = "Download PNG"; }, 1600);
-  });
+    btn.textContent = "Saved ✓";
+    clearTimeout(btn._t);
+    btn._t = setTimeout(function () { btn.textContent = label; }, 1600);
+  }
+  var dlQR = document.getElementById("dlQr");
+  var dl3D = document.getElementById("dl3d");
+  dlQR.addEventListener("click", function () { exportPNG("qr", dlQR, "Save QR"); });
+  dl3D.addEventListener("click", function () { exportPNG("3d", dl3D, "Save 3D"); });
 
   // ---------- start ----------
   renderChips();
