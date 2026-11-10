@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  var DEFAULT_URL = "https://enzo.fyi";
+  var DEFAULT_URL = "https://xarkgg.vercel.app";
   var DEFAULT_EMOJI = "🌸";
   var DEG = Math.PI / 180;
   var ISO_PHI = 55 * DEG, ISO_YAW = 45 * DEG;
